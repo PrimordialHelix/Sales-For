@@ -1,0 +1,51 @@
+# Python
+__pycache__/
+*.py[cod]
+*.pyo
+*.pyd
+.Python
+*.egg
+*.egg-info/
+dist/
+build/
+.eggs/
+
+# Virtual environments
+venv/
+.venv/
+env/
+.env/
+
+# Trained models (large binary files)
+models/*.joblib
+models/*.pkl
+models/*.model
+
+# Data files (may be large)
+data/*.csv
+data/*.zip
+!data/.gitkeep
+!data/sample_sales.csv
+
+# Streamlit
+.streamlit/
+
+# Test cache
+.pytest_cache/
+
+# IDE
+.vscode/
+.idea/
+*.swp
+*.swo
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Jupyter
+.ipynb_checkpoints/
+*.ipynb
+
+# Logs
+*.log

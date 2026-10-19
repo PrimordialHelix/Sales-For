@@ -1,0 +1,2 @@
+# models directory — trained model files are stored here after training
+# .joblib files are excluded from Git (see .gitignore)
