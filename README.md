@@ -54,6 +54,9 @@ The primary evaluation metric is **RMSE** (Root Mean Squared Error). Lower RMSE 
 |---|---|---|
 | Python | 3.11+ | Core language |
 | Streamlit | ≥1.28 | Web dashboard |
+| streamlit-lottie | 0.0.5 | Local dashboard chart animation |
+| st-vizzu | 0.1 | Animated Analytics charts |
+| ipyvizzu | 0.18.0 | Animated chart engine used by st-vizzu |
 | Pandas | ≥2.0 | Data manipulation |
 | NumPy | ≥1.24 | Numerical computation |
 | Scikit-learn | ≥1.3 | Linear Regression, preprocessing |
@@ -82,9 +85,15 @@ sales-forecasting/
 │   ├── __init__.py
 │   ├── data_processing.py         ← CSV loading, validation, splitting
 │   ├── feature_engineering.py     ← Calendar, lag, rolling features
+│   ├── animated_analytics.py      ← Monthly sales aggregation for Vizzu
 │   ├── model_training.py          ← Train LR & XGB, evaluate RMSE/MAE
 │   ├── forecasting.py             ← Recursive multi-step forecasting
-│   └── visualization.py           ← Plotly chart factory
+│   ├── visualization.py           ← Plotly chart factory
+│   └── styles.py                  ← SALESCAST dark theme and visual effects
+├── assets/
+│   ├── salescast-mark.svg         ← Animated SALESCAST chart mark
+│   ├── salescast-wordmark.svg     ← SALESCAST logo and tagline
+│   └── salescast-lottie.json      ← Local one-shot chart animation
 ├── tests/
 │   ├── test_data_processing.py
 │   ├── test_feature_engineering.py
@@ -178,31 +187,51 @@ The browser will open automatically at **http://localhost:8501**
 
 ## Using the App
 
-### 1. Home Page
-- Overview of the project, KPI cards, and quick-start buttons.
+The redesigned **SALESCAST — Intelligent Sales Analytics** interface keeps the
+existing Streamlit forecasting pipeline and adds a dark, responsive analytics
+workspace. Its cards, navigation, and restrained grid/neon effects are built
+with CSS. The dashboard uses `streamlit-lottie` with a bundled animation file;
+it does not fetch animation data from an external service.
 
-### 2. Dataset Page
-- Click **"Load Sample Dataset"** to load the built-in data, OR
-- Upload your own CSV file.
-- Configure which column is the Date and which is Sales.
-- Click **"Validate & Apply"**.
+### Dashboard
+- Review data/model readiness and KPIs computed from the validated dataset,
+  held-out evaluation, and any forecast generated in the current session.
+- Compare historical sales with the real forecast when one is available.
 
-### 3. EDA (Exploratory Data Analysis)
-- View sales trends, distributions, monthly/weekly patterns, and promotion effects.
+### Data Explorer
+- Load the included sample or upload a CSV, choose the date and target columns,
+  and click **Validate & Apply**.
+- Inspect the validated data, source missing values, duplicate rows, date
+  range, numerical summaries, and search-filtered preview.
 
-### 4. Model Training
-- Click **"Train Both Models"**.
-- Wait for Linear Regression and XGBoost to finish training (~30 seconds for 150k rows).
-- Compare RMSE and MAE scores.
-- View actual vs predicted chart.
+### Analytics
+- Explore an animated monthly sales trend, distribution, seasonal patterns,
+  promotion effects, group comparisons, and numeric correlations when the
+  selected data supports those views. The animated chart can be colored by
+  store, item, or category. The wrapper loads Vizzu's JavaScript runtime from
+  jsDelivr; sales aggregation runs locally, and ipyvizzu usage analytics are
+  disabled.
 
-### 5. Forecast
-- Select the model, horizon (7/14/30/60/90 days), and promotion settings.
-- Click **"Generate Forecast"**.
-- Download results as CSV.
+### Model Performance
+- Click **Train Both Models** to train Linear Regression and XGBoost using the
+  current chronological train/test split.
+- Compare actual computed RMSE, MAE, and R-squared, inspect predictions, and
+  review available feature importance.
 
-### 6. About
-- Student-friendly explanations of all ML concepts used.
+### Forecast Studio
+- Select a trained model, one of the supported horizons (7/14/30/60/90 days),
+  and promotion/group settings.
+- Generate the recursive model forecast, inspect its chart and table, and
+  download the result as CSV.
+
+### Reports
+- Read or download the project report and download saved report CSVs.
+- A forecast generated in the active session is separately available for
+  display and download.
+
+### About Project
+- Review explanations of the regression models, feature engineering,
+  evaluation metric, and known limitations.
 
 ---
 
@@ -302,3 +331,5 @@ Expected output: all tests pass (22+ test cases covering data loading, feature e
 
 *Built with ❤️ using Python, Streamlit, and Machine Learning*  
 *Project #42 · Section 315 B · B.Tech CSE*
+#   S a l e s - F o r  
+ 

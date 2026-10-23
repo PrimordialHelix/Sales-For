@@ -1,0 +1,450 @@
+--- P0 (normal) ---
+A PROJECT REPORT
+--- P1 (normal) ---
+Submitted by
+--- P2 (normal) ---
+ANURAG VERMA (26BCS10805)
+RANJEET KUMAR (26BCS10859)
+GURSIMRANJEET SINGH (26BCS10843)
+--- P3 (normal) ---
+
+--- P4 (normal) ---
+BACHELOR OF ENGINEERING
+--- P5 (normal) ---
+IN
+--- P6 (normal) ---
+COMPUTER SCIENCE AND ENGINEERING
+--- P7 (normal) ---
+Chandigarh University
+--- P8 (normal) ---
+October 2026
+--- P9 (normal) ---
+
+--- P10 (normal) ---
+BONAFIDE CERTIFICATE
+--- P11 (normal) ---
+Certified that this project report “AI-Based Sales Forecasting System using Linear Regression and XGBoost” is the bonafide work of “Anurag Verma (26BCS10805), Ranjeet Kumar (26BCS10859), and Gursimranjeet Singh (26BCS10843)” who carried out the project work under my/our supervision.
+--- P12 (normal) ---
+SIGNATURE
+--- P13 (normal) ---
+Name of the Head of the Department
+--- P14 (normal) ---
+HEAD OF THE DEPARTMENT
+--- P15 (normal) ---
+Computer Science and Engineering
+--- P16 (normal) ---
+SIGNATURE
+--- P17 (normal) ---
+Name of Supervisor
+--- P18 (normal) ---
+SUPERVISOR
+--- P19 (normal) ---
+Academic Designation
+--- P20 (normal) ---
+Computer Science and Engineering
+--- P21 (normal) ---
+Submitted for the project viva-voce examination held on ____________
+--- P22 (normal) ---
+INTERNAL EXAMINER                EXTERNAL EXAMINER
+--- P23 (normal) ---
+
+--- P24 (normal) ---
+ABSTRACT
+--- P25 (normal) ---
+This project presents an AI-based sales forecasting system for a general retail-business scenario. The objective is to predict future sales using historical sales records, promotional information and seasonal patterns. Sales forecasting is a regression problem because the target variable, sales, is a continuous numerical value.
+--- P26 (normal) ---
+The system uses a Kaggle-style Sales Forecast Dataset containing Date, Store, Sales and Promo columns. Past sales values, promotional indicators, rolling statistics and seasonality features are used as input features. Two machine-learning techniques are implemented: Linear Regression and XGBoost Regressor. The models are evaluated primarily using Root Mean Squared Error (RMSE), along with MAE and R-squared score.
+--- P27 (normal) ---
+The model with the lowest RMSE is automatically selected and used to forecast sales for the next six months. The system generates CSV reports and visual charts for historical sales, model comparison and future forecasting. The outcome helps a business plan inventory, staffing, promotions and demand management more effectively.
+--- P28 (normal) ---
+
+--- P29 (normal) ---
+GRAPHICAL ABSTRACT
+--- P30 (normal) ---
+Historical Sales + Promotions + Seasonality → Feature Engineering → Linear Regression / XGBoost → RMSE Comparison → Best Model → 6-Month Sales Forecast
+--- P31 (normal) ---
+
+--- P32 (normal) ---
+
+--- P33 (normal) ---
+
+--- P34 (normal) ---
+ABBREVIATIONS
+--- P35 (normal) ---
+AI — Artificial Intelligence
+--- P36 (normal) ---
+CSV — Comma-Separated Values
+--- P37 (normal) ---
+RMSE — Root Mean Squared Error
+--- P38 (normal) ---
+MAE — Mean Absolute Error
+--- P39 (normal) ---
+R2 — R-squared / Coefficient of Determination
+--- P40 (normal) ---
+XGBoost — Extreme Gradient Boosting
+--- P41 (normal) ---
+ML — Machine Learning
+--- P42 (normal) ---
+
+--- P43 (normal) ---
+SYMBOLS
+--- P44 (normal) ---
+y — Actual sales value
+--- P45 (normal) ---
+ŷ — Predicted sales value
+--- P46 (normal) ---
+n — Number of observations
+--- P47 (normal) ---
+RMSE — Root Mean Squared Error
+--- P48 (normal) ---
+
+--- P49 (normal) ---
+TABLE OF CONTENTS
+--- P50 (normal) ---
+CHAPTER 1. INTRODUCTION
+--- P51 (normal) ---
+1.1 Identification of Client / Need / Relevant Contemporary Issue
+--- P52 (normal) ---
+1.2 Identification of Problem
+--- P53 (normal) ---
+1.3 Identification of Tasks
+--- P54 (normal) ---
+1.4 Timeline
+--- P55 (normal) ---
+1.5 Organization of the Report
+--- P56 (normal) ---
+CHAPTER 2. LITERATURE REVIEW / BACKGROUND STUDY
+--- P57 (normal) ---
+2.1 Timeline of the Reported Problem
+--- P58 (normal) ---
+2.2 Existing Solutions
+--- P59 (normal) ---
+2.3 Bibliometric Analysis
+--- P60 (normal) ---
+2.4 Review Summary
+--- P61 (normal) ---
+2.5 Problem Definition
+--- P62 (normal) ---
+2.6 Goals / Objectives
+--- P63 (normal) ---
+CHAPTER 3. DESIGN FLOW / PROCESS
+--- P64 (normal) ---
+3.1 Evaluation and Selection of Specifications / Features
+--- P65 (normal) ---
+3.2 Design Constraints
+--- P66 (normal) ---
+3.3 Analysis of Features and Finalization Subject to Constraints
+--- P67 (normal) ---
+3.4 Design Flow
+--- P68 (normal) ---
+3.5 Design Selection
+--- P69 (normal) ---
+3.6 Implementation Plan / Methodology
+--- P70 (normal) ---
+CHAPTER 4. RESULTS ANALYSIS AND VALIDATION
+--- P71 (normal) ---
+4.1 Implementation of Solution
+--- P72 (normal) ---
+CHAPTER 5. CONCLUSION AND FUTURE WORK
+--- P73 (normal) ---
+5.1 Conclusion
+--- P74 (normal) ---
+5.2 Future Work
+--- P75 (normal) ---
+REFERENCES
+--- P76 (normal) ---
+APPENDIX
+--- P77 (normal) ---
+USER MANUAL
+--- P78 (normal) ---
+
+--- P79 (Heading 1) ---
+CHAPTER 1. INTRODUCTION
+--- P80 (Heading 2) ---
+1.1 Identification of Client / Need / Relevant Contemporary Issue
+--- P81 (normal) ---
+Retail businesses need accurate estimates of future sales to plan inventory, manage supply chains, schedule employees and design promotional campaigns. Overstocking increases storage cost and wastage, while understocking causes lost sales and customer dissatisfaction.
+--- P82 (normal) ---
+In a general retail situation, sales depend not only on previous demand but also on promotions and seasonal patterns such as festivals, holidays and quarterly demand cycles. A data-driven AI forecasting system can therefore help businesses make better inventory and demand-planning decisions.
+--- P83 (Heading 2) ---
+1.2 Identification of Problem
+--- P84 (normal) ---
+The broad problem is that a retail business lacks an automated and reliable method to predict future sales from historical sales, promotional activity and seasonal trends. This creates difficulty in inventory planning, demand estimation and financial decision-making.
+--- P85 (Heading 2) ---
+1.3 Identification of Tasks
+--- P86 (normal) ---
+Collect a Kaggle-style sales forecast dataset containing Date, Store, Sales and Promo.
+--- P87 (normal) ---
+Preprocess and validate the sales data.
+--- P88 (normal) ---
+Create past-sales, promotion and seasonality features.
+--- P89 (normal) ---
+Train Linear Regression and XGBoost regression models.
+--- P90 (normal) ---
+Evaluate the models using RMSE as the primary metric.
+--- P91 (normal) ---
+Select the model with the lowest RMSE.
+--- P92 (normal) ---
+Forecast sales for the next six months.
+--- P93 (normal) ---
+Generate CSV reports and visualizations.
+--- P94 (Heading 2) ---
+1.4 Timeline
+--- P95 (normal) ---
+The project was completed in four phases: dataset understanding and preparation; feature engineering and model development; testing, RMSE-based evaluation and forecast generation; documentation, visualization and final report preparation.
+--- P96 (Heading 2) ---
+1.5 Organization of the Report
+--- P97 (normal) ---
+Chapter 1 explains the business need, problem and tasks. Chapter 2 reviews existing forecasting approaches and defines the objectives. Chapter 3 explains the selected features, constraints, alternative designs and methodology. Chapter 4 presents implementation and validation results. Chapter 5 provides the conclusion and future work.
+--- P98 (normal) ---
+
+--- P99 (Heading 1) ---
+CHAPTER 2. LITERATURE REVIEW / BACKGROUND STUDY
+--- P100 (Heading 2) ---
+2.1 Timeline of the Reported Problem
+--- P101 (normal) ---
+Sales forecasting has long been used in retail and supply-chain management. Early methods used manual records and moving averages. Later, statistical models such as ARIMA and exponential smoothing became common. With larger digital datasets, machine-learning methods such as regression, random forests, gradient boosting and XGBoost are now widely used for demand forecasting.
+--- P102 (Heading 2) ---
+2.2 Existing Solutions
+--- P103 (normal) ---
+Manual sales estimation by store managers.
+--- P104 (normal) ---
+Spreadsheet-based moving-average forecasting.
+--- P105 (normal) ---
+Statistical time-series models such as ARIMA and exponential smoothing.
+--- P106 (normal) ---
+Machine-learning regression models using historical and promotional features.
+--- P107 (normal) ---
+Gradient-boosting methods such as XGBoost for non-linear demand patterns.
+--- P108 (Heading 2) ---
+2.3 Bibliometric Analysis
+--- P109 (normal) ---
+
+--- P110 (Heading 2) ---
+2.4 Review Summary
+--- P111 (normal) ---
+Linear Regression is useful as an interpretable baseline model, while XGBoost is effective for capturing non-linear relationships among past sales, promotions and seasonal factors. Therefore, this project compares both methods and selects the better model using RMSE.
+--- P112 (Heading 2) ---
+2.5 Problem Definition
+--- P113 (normal) ---
+The system will predict future monthly sales using historical sales values, promotional information and seasonality. It will train Linear Regression and XGBoost models, compare them using RMSE, select the best model and forecast the next six months. The project does not include real-time sales collection, payment processing or handling of personal customer data.
+--- P114 (Heading 2) ---
+2.6 Goals / Objectives
+--- P115 (normal) ---
+To develop a Python-based sales forecasting system.
+--- P116 (normal) ---
+To use past sales, promotions and seasonality as input features.
+--- P117 (normal) ---
+To implement Linear Regression and XGBoost regression models.
+--- P118 (normal) ---
+To evaluate models primarily using RMSE.
+--- P119 (normal) ---
+To select the model with the lowest RMSE.
+--- P120 (normal) ---
+To forecast sales for the next six months.
+--- P121 (normal) ---
+To generate charts and CSV reports for business planning.
+--- P122 (normal) ---
+
+--- P123 (Heading 1) ---
+CHAPTER 3. DESIGN FLOW / PROCESS
+--- P124 (Heading 2) ---
+3.1 Evaluation and Selection of Specifications / Features
+--- P125 (normal) ---
+
+--- P126 (Heading 2) ---
+3.2 Design Constraints
+--- P127 (normal) ---
+Economic constraint: The project uses free and open-source Python libraries.
+--- P128 (normal) ---
+Technical constraint: Python 3.8 or above is required with Pandas, NumPy, Scikit-learn, Matplotlib and XGBoost.
+--- P129 (normal) ---
+Data constraint: The dataset should contain Date and Sales columns; Promo is recommended.
+--- P130 (normal) ---
+Ethical constraint: No personal customer data is collected or processed.
+--- P131 (normal) ---
+Operational constraint: The system performs monthly sales forecasting.
+--- P132 (normal) ---
+Professional constraint: Results must be reproducible and clearly interpreted.
+--- P133 (Heading 2) ---
+3.3 Analysis of Features and Finalization Subject to Constraints
+--- P134 (normal) ---
+Deep-learning models were not selected because the available dataset size is limited and XGBoost provides strong performance with lower computational requirements. The final feature set includes past sales, rolling statistics, calendar/seasonality features and promotion-related features.
+--- P135 (Heading 2) ---
+3.4 Design Flow
+--- P136 (normal) ---
+Design Alternative 1: Statistical forecasting using moving averages or ARIMA. It is simple but cannot effectively use promotion and multiple seasonal features.
+--- P137 (normal) ---
+Design Alternative 2: Machine-learning regression using Linear Regression and XGBoost. It can combine past sales, promotions and seasonality in one predictive framework.
+--- P138 (Heading 2) ---
+3.5 Design Selection
+--- P139 (normal) ---
+Design Alternative 2 was selected because it directly matches the project requirement of using historical sales, promotions and seasonality. It also allows RMSE-based comparison between a simple interpretable model and a powerful gradient-boosting model.
+--- P140 (Heading 2) ---
+3.6 Implementation Plan / Methodology
+--- P141 (normal) ---
+Load the Kaggle-style CSV or generate a general sample dataset.
+--- P142 (normal) ---
+Convert dates and handle missing values.
+--- P143 (normal) ---
+Aggregate daily/multi-store records into monthly sales if required.
+--- P144 (normal) ---
+Create lag, rolling, promotion and seasonality features.
+--- P145 (normal) ---
+Split data chronologically into training and testing sets.
+--- P146 (normal) ---
+Train Linear Regression and XGBoost.
+--- P147 (normal) ---
+Calculate RMSE, MAE and R-squared score.
+--- P148 (normal) ---
+Select the model with the lowest RMSE.
+--- P149 (normal) ---
+Generate an iterative six-month forecast.
+--- P150 (normal) ---
+Save CSV reports and charts.
+--- P151 (normal) ---
+
+--- P152 (Heading 1) ---
+CHAPTER 4. RESULTS ANALYSIS AND VALIDATION
+--- P153 (Heading 2) ---
+4.1 Implementation of Solution
+--- P154 (normal) ---
+The system was implemented in Python using Pandas, NumPy, Scikit-learn, Matplotlib and XGBoost. It was tested on a general retail-style dataset containing 48 monthly records from January 2021 to December 2024. The final 20% of the data was used as the test set.
+--- P155 (normal) ---
+RMSE was used as the main evaluation metric because it penalizes larger forecasting errors more strongly. In the executed test run, Linear Regression achieved RMSE 313.68, while the gradient-boosting fallback model achieved RMSE 1799.66. Therefore, Linear Regression was selected as the best model for this dataset.
+--- P156 (normal) ---
+
+--- P157 (normal) ---
+The selected model produced the following six-month forecast, assuming promotional activity continues.
+--- P158 (normal) ---
+
+--- P159 (normal) ---
+Figure 4.1: Historical Monthly Sales
+--- P160 (normal) ---
+
+--- P161 (normal) ---
+Figure 4.2: Actual versus Predicted Sales
+--- P162 (normal) ---
+
+--- P163 (normal) ---
+Figure 4.3: Sales Forecast for the Next Six Months
+--- P164 (normal) ---
+
+--- P165 (normal) ---
+The outputs validate that the system can process sales data, use promotional and seasonal features, compare models using RMSE and generate a practical demand forecast.
+--- P166 (normal) ---
+
+--- P167 (Heading 1) ---
+CHAPTER 5. CONCLUSION AND FUTURE WORK
+--- P168 (Heading 2) ---
+5.1 Conclusion
+--- P169 (normal) ---
+The project successfully implements an AI-based sales forecasting system using Linear Regression and XGBoost. It uses historical sales, promotional data and seasonality to predict future sales. The model with the lowest RMSE is selected automatically for forecasting.
+--- P170 (normal) ---
+In the test run, Linear Regression produced the lowest RMSE and was selected as the best model. The result may change with a different Kaggle dataset because data size, store behaviour, promotional frequency and seasonal strength affect model performance.
+--- P171 (Heading 2) ---
+5.2 Future Work
+--- P172 (normal) ---
+Use the complete Kaggle Sales Forecast Dataset with multiple stores and products.
+--- P173 (normal) ---
+Add holiday, festival, weather and competitor-promotion features.
+--- P174 (normal) ---
+Implement hyperparameter tuning using GridSearchCV or Optuna.
+--- P175 (normal) ---
+Add prediction intervals to show forecast uncertainty.
+--- P176 (normal) ---
+Develop a Streamlit or Flask web dashboard.
+--- P177 (normal) ---
+Deploy the model through an API for business use.
+--- P178 (normal) ---
+
+--- P179 (Heading 1) ---
+REFERENCES
+--- P180 (normal) ---
+[1] Chen, T., & Guestrin, C. (2016). XGBoost: A Scalable Tree Boosting System. KDD.
+--- P181 (normal) ---
+[2] Scikit-learn Documentation, https://scikit-learn.org/stable/documentation.html
+--- P182 (normal) ---
+[3] XGBoost Documentation, https://xgboost.readthedocs.io/
+--- P183 (normal) ---
+[4] Pandas Documentation, https://pandas.pydata.org/docs/
+--- P184 (normal) ---
+[5] Kaggle Datasets, https://www.kaggle.com/datasets
+--- P185 (normal) ---
+[6] Géron, A. Hands-On Machine Learning with Scikit-Learn, Keras and TensorFlow, O’Reilly Media.
+--- P186 (normal) ---
+
+--- P187 (Heading 1) ---
+APPENDIX
+--- P188 (Heading 2) ---
+A. Plagiarism Report
+--- P189 (normal) ---
+To be attached after checking the report through the university-approved plagiarism tool.
+--- P190 (Heading 2) ---
+B. Design Checklist
+--- P191 (normal) ---
+Regression problem identified: Yes
+--- P192 (normal) ---
+Kaggle-style dataset supported: Yes
+--- P193 (normal) ---
+Past-sales features created: Yes
+--- P194 (normal) ---
+Promotion features created: Yes
+--- P195 (normal) ---
+Seasonality features created: Yes
+--- P196 (normal) ---
+Linear Regression implemented: Yes
+--- P197 (normal) ---
+XGBoost implemented: Yes
+--- P198 (normal) ---
+RMSE used as main metric: Yes
+--- P199 (normal) ---
+Best model selected automatically: Yes
+--- P200 (normal) ---
+Six-month forecast generated: Yes
+--- P201 (normal) ---
+
+--- P202 (Heading 1) ---
+USER MANUAL
+--- P203 (Heading 2) ---
+1. Install Requirements
+--- P204 (normal) ---
+pip install pandas numpy scikit-learn matplotlib xgboost
+--- P205 (Heading 2) ---
+2. Run with Sample Data
+--- P206 (normal) ---
+python sales_forecasting_project.py
+--- P207 (normal) ---
+If sales_data.csv is not found, the program automatically creates a general retail sales dataset with promotions and seasonality.
+--- P208 (Heading 2) ---
+3. Use a Kaggle Sales Forecast Dataset
+--- P209 (normal) ---
+Download a sales forecast dataset from Kaggle and save it as sales_data.csv in the same folder. The preferred columns are:
+--- P210 (normal) ---
+Date,Store,Sales,Promo
+--- P211 (normal) ---
+Example:
+--- P212 (normal) ---
+Date,Store,Sales,Promo
+2021-01-01,1,12500,0
+2021-01-01,2,9800,1
+--- P213 (normal) ---
+The program automatically aggregates the data into monthly sales if the dataset contains daily or multiple-store records.
+--- P214 (Heading 2) ---
+4. Output Files
+--- P215 (normal) ---
+historical_sales.csv — processed historical sales data.
+--- P216 (normal) ---
+sales_forecast.csv — six-month future sales forecast.
+--- P217 (normal) ---
+model_performance.csv — RMSE, MAE and R2 results.
+--- P218 (normal) ---
+historical_sales.png — historical sales chart.
+--- P219 (normal) ---
+model_comparison.png — actual versus predicted sales chart.
+--- P220 (normal) ---
+future_forecast.png — future sales forecast chart.
+--- P221 (Heading 2) ---
+5. Notes
+--- P222 (normal) ---
+Use Promo = 1 for a promotional month and Promo = 0 for a non-promotional month. More historical data generally improves forecast accuracy. The forecast assumes that promotional activity continues in future months.

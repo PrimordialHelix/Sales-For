@@ -1,0 +1,5 @@
+Dataset,Model,RMSE,MAE,R2_Score,Status
+Built-in Demonstration (sample_sales.csv),Linear Regression,4.6613,2.488,0.9617,Winning Model (Lowest RMSE)
+Built-in Demonstration (sample_sales.csv),XGBoost Regressor,5.3073,3.5102,0.9504,Baseline Comparison
+Multi-Store Scaled (sales_forecasting_synthetic.csv),Linear Regression,10.6682,7.2389,0.9603,Baseline Comparison
+Multi-Store Scaled (sales_forecasting_synthetic.csv),XGBoost Regressor,4.0397,2.7457,0.9943,Winning Model (Lowest RMSE)

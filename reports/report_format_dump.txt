@@ -1,0 +1,522 @@
+--- P0 (Body Text) ---
+
+--- P1 (Body Text) ---
+
+--- P2 (Body Text) ---
+
+--- P3 (Body Text) ---
+
+--- P4 (Body Text) ---
+
+--- P5 (Body Text) ---
+
+--- P6 (Body Text) ---
+
+--- P7 (Body Text) ---
+
+--- P8 (Body Text) ---
+
+--- P9 (Body Text) ---
+
+--- P10 (Body Text) ---
+
+--- P11 (Body Text) ---
+
+--- P12 (Body Text) ---
+
+--- P13 (Body Text) ---
+
+--- P14 (Body Text) ---
+
+--- P15 (Body Text) ---
+
+--- P16 (Body Text) ---
+
+--- P17 (Body Text) ---
+
+--- P18 (Title) ---
+Format for Project Report
+--- P19 (Normal) ---
+
+--- P20 (Body Text) ---
+
+--- P21 (Normal) ---
+<Font Size 18><1.5 line spacing><Font Style Times New Roman – Bold>
+--- P22 (Body Text) ---
+
+--- P23 (Body Text) ---
+
+--- P24 (Heading 2) ---
+A PROJECT REPORT
+--- P25 (Normal) ---
+<Font Size 14><Font Style Times New Roman – Bold>
+--- P26 (Body Text) ---
+
+--- P27 (Body Text) ---
+
+--- P28 (Normal) ---
+Submitted by
+--- P29 (Normal) ---
+<Font Size 14><Italic><Font Style Times New Roman – Bold>
+--- P30 (Body Text) ---
+
+--- P31 (Body Text) ---
+
+--- P32 (Heading 1) ---
+NAME OF THE CANDIDATE(S)
+--- P33 (Normal) ---
+<Font Size 16><Font Style Times New Roman – Bold>
+--- P34 (Body Text) ---
+
+--- P35 (Body Text) ---
+
+--- P36 (Normal) ---
+in partial fulfillment for the award of the degree of
+--- P37 (Normal) ---
+<Font Size 14><1.5 line spacing><Italic><Font Style Times New Roman – Bold>
+--- P38 (Body Text) ---
+
+--- P39 (Body Text) ---
+
+--- P40 (Heading 1) ---
+NAME OF THE DEGREE
+--- P41 (Normal) ---
+<Font Size 16><Font Style Times New Roman – Bold>
+--- P42 (Normal) ---
+IN
+--- P43 (Normal) ---
+BRANCH OF STUDY
+--- P44 (Normal) ---
+<Font Size 14><Font Style Times New Roman>
+--- P45 (Body Text) ---
+
+--- P46 (Body Text) ---
+
+--- P47 (Normal) ---
+Chandigarh University
+--- P48 (Normal) ---
+MONTH & YEAR
+--- P49 (Normal) ---
+<Font Size 14>
+--- P50 (Normal) ---
+
+--- P51 (Body Text) ---
+
+--- P52 (Body Text) ---
+
+--- P53 (Normal) ---
+A PROJECT REPORT
+--- P54 (Body Text) ---
+
+--- P55 (Body Text) ---
+
+--- P56 (Body Text) ---
+
+--- P57 (Heading 3) ---
+Submitted by
+--- P58 (Body Text) ---
+
+--- P59 (Body Text) ---
+
+--- P60 (Body Text) ---
+
+--- P61 (Normal) ---
+John Doe (UID) Jane Doe (UID)
+--- P62 (Body Text) ---
+
+--- P63 (Body Text) ---
+
+--- P64 (Normal) ---
+in partial fulfillment for the award of the degree of
+--- P65 (Body Text) ---
+
+--- P66 (Body Text) ---
+
+--- P67 (Body Text) ---
+
+--- P68 (Heading 1) ---
+BACHELOR OF ENGINEERING
+--- P69 (Body Text) ---
+
+--- P70 (Normal) ---
+IN
+--- P71 (Body Text) ---
+
+--- P72 (Normal) ---
+ELECTRONICS ENGINEERING
+--- P73 (Body Text) ---
+
+--- P74 (Body Text) ---
+
+--- P75 (Normal) ---
+Chandigarh University
+--- P76 (Body Text) ---
+
+--- P77 (Body Text) ---
+
+--- P78 (Body Text) ---
+
+--- P79 (Normal) ---
+Dec 2022
+--- P80 (Normal) ---
+
+--- P81 (Body Text) ---
+
+--- P82 (Body Text) ---
+
+--- P83 (Body Text) ---
+
+--- P84 (Heading 1) ---
+BONAFIDE CERTIFICATE
+--- P85 (Normal) ---
+<Font Style Times New Roman – size -16>
+--- P86 (Body Text) ---
+
+--- P87 (Body Text) ---
+
+--- P88 (Normal) ---
+<Font Style Times New Roman – size -14>
+--- P89 (Normal) ---
+Certified that this project report “………. TITLE OF THE PROJECT…………….” is the bonafide work of “…………..NAME OF THE CANDIDATE(S).…………” who carried out the project work under my/our supervision.
+--- P90 (Body Text) ---
+
+--- P91 (Body Text) ---
+
+--- P92 (Body Text) ---
+
+--- P93 (Normal) ---
+
+--- P94 (Normal) ---
+<<Signature of the HoD>>
+--- P95 (Normal) ---
+SIGNATURE
+--- P96 (Body Text) ---
+
+--- P97 (Body Text) ---
+
+--- P98 (Normal) ---
+<<Name of the Head of the Department>>
+--- P99 (Body Text) ---
+
+--- P100 (Body Text) ---
+
+--- P101 (Heading 4) ---
+HEAD OF THE DEPARTMENT
+--- P102 (Body Text) ---
+
+--- P103 (Body Text) ---
+
+--- P104 (Normal) ---
+<<Department>>
+--- P105 (Normal) ---
+<<Signature of the Supervisor>>
+--- P106 (Heading 4) ---
+SIGNATURE
+--- P107 (Body Text) ---
+
+--- P108 (Body Text) ---
+
+--- P109 (Normal) ---
+<<Name>>
+--- P110 (Heading 4) ---
+SUPERVISOR
+--- P111 (Normal) ---
+<<Academic Designation>>
+--- P112 (Body Text) ---
+
+--- P113 (Body Text) ---
+
+--- P114 (Normal) ---
+<<Department>>
+--- P115 (Normal) ---
+
+--- P116 (Body Text) ---
+
+--- P117 (Body Text) ---
+
+--- P118 (Body Text) ---
+
+--- P119 (Body Text) ---
+
+--- P120 (Body Text) ---
+
+--- P121 (Normal) ---
+Submitted for the project viva-voce examination held on
+--- P122 (Body Text) ---
+
+--- P123 (Normal) ---
+INTERNAL EXAMINER	EXTERNAL EXAMINER
+--- P124 (Normal) ---
+
+--- P125 (Heading 1) ---
+TABLE OF CONTENTS
+--- P126 (Normal) ---
+
+--- P127 (Normal) ---
+
+--- P128 (Normal) ---
+Figure 3.1 ………………………………………………………………………………….
+--- P129 (Normal) ---
+Figure 3.2 ………………………………………………………………………………….
+--- P130 (Normal) ---
+Figure 4.1 …………………………………………………………………………….……
+--- P131 (Normal) ---
+
+--- P132 (Body Text) ---
+
+--- P133 (Normal) ---
+Table 3.1 ………………………………………………………………………………….
+--- P134 (Normal) ---
+Table 3.2 ………………………………………………………………………………….
+--- P135 (Normal) ---
+Table 4.1 …………………………………………………………………………….……
+--- P136 (Normal) ---
+
+--- P137 (Body Text) ---
+
+--- P138 (Body Text) ---
+
+--- P139 (Normal) ---
+Note: Text in Red is presented as an example (replace with relevant information)
+--- P140 (Normal) ---
+
+--- P141 (Heading 1) ---
+ABSTRACT
+--- P142 (Normal) ---
+---------------------------- New Page -------------------------
+--- P143 (Heading 1) ---
+GRAPHICAL ABSTRACT
+--- P144 (Normal) ---
+---------------------------- New Page -------------------------
+--- P145 (Heading 1) ---
+ABBREVIATIONS
+--- P146 (Normal) ---
+---------------------------- New Page -------------------------
+--- P147 (Heading 1) ---
+SYMBOLS
+--- P148 (Normal) ---
+---------------------------- New Page -------------------------
+--- P149 (Normal) ---
+
+--- P150 (Heading 1) ---
+INTRODUCTION
+--- P151 (Body Text) ---
+
+--- P152 (Heading 2) ---
+Identification of Client /Need / Relevant Contemporary issue
+--- P153 (Body Text) ---
+
+--- P154 (List Paragraph) ---
+Justify that the issue at hand exists though statistics and documentation
+--- P155 (List Paragraph) ---
+It’s a problem that someone needs resolution (Client/consultancy problem)
+--- P156 (List Paragraph) ---
+The need is justified through a survey or reported after a survey
+--- P157 (List Paragraph) ---
+Relevant contemporary issue documented in reports of some agencies
+--- P158 (Body Text) ---
+
+--- P159 (Heading 2) ---
+Identification of Problem
+--- P160 (Body Text) ---
+
+--- P161 (Body Text) ---
+Identify the broad problem that needs resolution (should not include any hint of solution)
+--- P162 (Body Text) ---
+
+--- P163 (Heading 2) ---
+Identification of Tasks
+--- P164 (Body Text) ---
+
+--- P165 (Body Text) ---
+Define and differentiate the tasks required to identify, build and test the solution. (Should be able to build a framework of the report, identify the chapters, headings and subheadings)
+--- P166 (Body Text) ---
+
+--- P167 (Heading 2) ---
+Timeline
+--- P168 (Body Text) ---
+
+--- P169 (Body Text) ---
+Define the timeline (preferably using a Gantt chart)
+--- P170 (Body Text) ---
+
+--- P171 (Heading 2) ---
+Organization of the Report
+--- P172 (Body Text) ---
+
+--- P173 (Body Text) ---
+Give a brief what should be expected in each of the chapters
+--- P174 (Normal) ---
+
+--- P175 (Heading 1) ---
+LITERATURE REVIEW/BACKGROUND STUDY
+--- P176 (Body Text) ---
+
+--- P177 (Heading 2) ---
+Timeline of the reported problem
+--- P178 (Body Text) ---
+
+--- P179 (Body Text) ---
+As investigated throughout the world, when was the problem identified, documentary proof of the incidents.
+--- P180 (Body Text) ---
+
+--- P181 (Heading 2) ---
+Existing solutions
+--- P182 (Body Text) ---
+
+--- P183 (Body Text) ---
+Brief of the earlier proposed solutions
+--- P184 (Body Text) ---
+
+--- P185 (Heading 2) ---
+Bibliometric analysis
+--- P186 (Body Text) ---
+
+--- P187 (Body Text) ---
+Analysis based on (key features, effectiveness and drawback)
+--- P188 (Body Text) ---
+
+--- P189 (Heading 2) ---
+Review Summary
+--- P190 (Body Text) ---
+
+--- P191 (Body Text) ---
+Link findings of literature review with the project at hand.
+--- P192 (Body Text) ---
+
+--- P193 (Heading 2) ---
+Problem Definition
+--- P194 (Body Text) ---
+
+--- P195 (Body Text) ---
+Define the problem at hand including what is to be done, how it is to be done and what not to be done
+--- P196 (Body Text) ---
+
+--- P197 (Heading 2) ---
+Goals/Objectives
+--- P198 (Body Text) ---
+
+--- P199 (Body Text) ---
+Statements setting the milestones during the course of project work. Keeping in mind
+--- P200 (List Paragraph) ---
+Narrow, specific statements about what is to be learned and performed
+--- P201 (List Paragraph) ---
+Precise intentions
+--- P202 (List Paragraph) ---
+Tangible
+--- P203 (List Paragraph) ---
+Concrete
+--- P204 (List Paragraph) ---
+Can be validated or measure
+--- P205 (Normal) ---
+
+--- P206 (Heading 1) ---
+DESIGN FLOW/PROCESS
+--- P207 (Body Text) ---
+
+--- P208 (Heading 2) ---
+Evaluation & Selection of Specifications/Features
+--- P209 (Body Text) ---
+
+--- P210 (Body Text) ---
+Critically evaluate the features identified in the literature and prepare the list of features ideally required in the solution.
+--- P211 (Body Text) ---
+
+--- P212 (Heading 2) ---
+Design Constraints
+--- P213 (Body Text) ---
+
+--- P214 (Body Text) ---
+1.1.1. Standards: Regulations/Economic/Environmental/Health/manufacturability/Safety/Professional/ Ethical/Social & Political Issues/Cost considered in the design.
+--- P215 (Body Text) ---
+
+--- P216 (Heading 2) ---
+Analysis of Features and finalization subject to constraints
+--- P217 (Body Text) ---
+
+--- P218 (Body Text) ---
+Remove, modify and add features in light of the constraints.
+--- P219 (Body Text) ---
+
+--- P220 (Heading 2) ---
+Design Flow
+--- P221 (Body Text) ---
+
+--- P222 (Body Text) ---
+At least 2 alternative designs/processes/flow to make the solution/complete the project.
+--- P223 (Body Text) ---
+
+--- P224 (Heading 2) ---
+Design selection
+--- P225 (Body Text) ---
+
+--- P226 (Body Text) ---
+Analyze the above designs and select the best design based supported with comparison and reason.
+--- P227 (Body Text) ---
+
+--- P228 (Heading 2) ---
+Implementation plan/methodology
+--- P229 (Body Text) ---
+
+--- P230 (Body Text) ---
+Flowchart/algorithm/ detailed block diagram
+--- P231 (Normal) ---
+
+--- P232 (Heading 1) ---
+RESULTS ANALYSIS AND VALIDATION
+--- P233 (Body Text) ---
+
+--- P234 (Heading 2) ---
+Implementation of solution
+--- P235 (Body Text) ---
+
+--- P236 (Body Text) ---
+Use modern tools in:
+--- P237 (List Paragraph) ---
+analysis,
+--- P238 (List Paragraph) ---
+design drawings/schematics/ solid models,
+--- P239 (List Paragraph) ---
+report preparation,
+--- P240 (List Paragraph) ---
+project management, and communication,
+--- P241 (List Paragraph) ---
+Testing/characterization/interpretation/data validation.
+--- P242 (Normal) ---
+
+--- P243 (Heading 1) ---
+CONCLUSION AND FUTURE WORK
+--- P244 (Body Text) ---
+
+--- P245 (Heading 2) ---
+Conclusion
+--- P246 (Body Text) ---
+
+--- P247 (Body Text) ---
+Should include expected results/ outcome, deviation from expected results and reason for the same
+--- P248 (Body Text) ---
+
+--- P249 (Heading 2) ---
+Future work
+--- P250 (Body Text) ---
+
+--- P251 (Body Text) ---
+Should include the Way ahead (required modifications in the solution, change in approach, suggestions for extending the solution.
+--- P252 (Normal) ---
+
+--- P253 (Body Text) ---
+
+--- P254 (Normal) ---
+
+--- P255 (Body Text) ---
+
+--- P256 (List Paragraph) ---
+Plagiarism Report
+--- P257 (Body Text) ---
+
+--- P258 (List Paragraph) ---
+Design Checklist
+--- P259 (Normal) ---
+
+--- P260 (Body Text) ---
+(Complete step by step instructions along with pictures necessary to run the project)
