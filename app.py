@@ -8,6 +8,9 @@ Run:  py -m streamlit run app.py
 from __future__ import annotations
 
 import io
+import base64
+import hashlib
+from html import escape as escape_html
 import os
 import sys
 from pathlib import Path
@@ -16,6 +19,7 @@ from typing import Optional
 import numpy as np
 import pandas as pd
 import streamlit as st
+from streamlit_lottie import st_lottie
 
 # ── Path setup ────────────────────────────────────────────────────────────────
 ROOT = Path(__file__).parent
@@ -28,69 +32,43 @@ from src.data_processing import (
 )
 from src.feature_engineering import build_feature_matrix
 from src.forecasting import generate_forecast, make_forecast_dates
+from src.animated_analytics import prepare_animated_sales_data
 from src.visualization import (
     plot_actual_vs_predicted, plot_avg_by_period, plot_correlation_heatmap,
     plot_feature_importance, plot_forecast, plot_group_comparison,
     plot_model_comparison, plot_promo_comparison, plot_sales_distribution,
     plot_sales_over_time,
 )
+from src.styles import SALESCAST_CSS
+
+def svg_data_uri(path: Path) -> str:
+    """Embed a local SVG asset so it renders reliably in Streamlit markdown."""
+    encoded = base64.b64encode(path.read_bytes()).decode("ascii")
+    return f"data:image/svg+xml;base64,{encoded}"
+
+
+SALESCAST_MARK = svg_data_uri(ROOT / "assets" / "salescast-mark.svg")
+SALESCAST_WORDMARK = svg_data_uri(ROOT / "assets" / "salescast-wordmark.svg")
+
+
+@st.cache_data
+def load_salescast_animation() -> dict:
+    """Load the locally bundled Lottie animation."""
+    import json
+
+    with (ROOT / "assets" / "salescast-lottie.json").open(encoding="utf-8") as animation_file:
+        return json.load(animation_file)
+
 
 # ── Page config ────────────────────────────────────────────────────────────────
 st.set_page_config(
-    page_title="AI Sales Forecasting | Project #42",
-    page_icon="📈",
+    page_title="SALESCAST | Intelligent Sales Analytics",
+    page_icon=str(ROOT / "assets" / "salescast-mark.svg"),
     layout="wide",
     initial_sidebar_state="expanded",
 )
 
-# ── Custom CSS ─────────────────────────────────────────────────────────────────
-st.markdown("""
-<style>
-  @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap');
-  html, body, [class*="css"] { font-family: 'Inter', sans-serif; }
-
-  .main { background: #0e1117; }
-
-  .kpi-card {
-    background: linear-gradient(135deg, #1a1f2e 0%, #16213e 100%);
-    border: 1px solid #2d3561;
-    border-radius: 12px;
-    padding: 20px 24px;
-    text-align: center;
-    box-shadow: 0 4px 20px rgba(76,155,232,0.08);
-    transition: transform 0.2s ease, box-shadow 0.2s ease;
-  }
-  .kpi-card:hover {
-    transform: translateY(-3px);
-    box-shadow: 0 8px 30px rgba(76,155,232,0.18);
-  }
-  .kpi-value { font-size: 2rem; font-weight: 700; color: #4C9BE8; }
-  .kpi-label { font-size: 0.85rem; color: #8892a0; margin-top: 4px; }
-
-  .section-header {
-    font-size: 1.4rem; font-weight: 600;
-    color: #e2e8f0;
-    border-left: 4px solid #4C9BE8;
-    padding-left: 12px;
-    margin: 24px 0 16px;
-  }
-  .badge-best {
-    background: linear-gradient(90deg,#4C9BE8,#7EC8A0);
-    color: white; font-size: 0.75rem; font-weight: 600;
-    padding: 2px 10px; border-radius: 20px;
-  }
-  .info-box {
-    background: #1a2744; border-left: 4px solid #4C9BE8;
-    border-radius: 8px; padding: 16px; margin: 12px 0;
-    color: #c8d3e0;
-  }
-  .warn-box {
-    background: #2a1a00; border-left: 4px solid #F4845F;
-    border-radius: 8px; padding: 16px; margin: 12px 0;
-    color: #e0c8b0;
-  }
-</style>
-""", unsafe_allow_html=True)
+st.markdown(SALESCAST_CSS, unsafe_allow_html=True)
 
 # ── Session-state initialisation ──────────────────────────────────────────────
 for key, default in {
@@ -99,124 +77,278 @@ for key, default in {
     "metrics": {}, "feature_names": [],
     "X_test": None, "y_test": None,
     "test_dates": None,
+    "active_page": "Dashboard",
+    "intro_revealed": False,
 }.items():
     if key not in st.session_state:
         st.session_state[key] = default
 
+if st.session_state.pop("page_override", None) == "📂 Dataset":
+    st.session_state.active_page = "Data Explorer"
+
+
+def render_metric_card(
+    label: str,
+    value: str,
+    detail: str = "",
+    accent: str = "teal",
+) -> None:
+    """Render a consistently styled card with escaped, data-backed content."""
+    allowed_accents = {"teal", "purple", "emerald", "blue", "pink"}
+    accent_class = accent if accent in allowed_accents else "teal"
+    st.markdown(
+        f'<div class="metric-card accent-{accent_class}">'
+        f'<div class="metric-label">{escape_html(label)}</div>'
+        f'<div class="metric-value">{escape_html(value)}</div>'
+        f'<div class="metric-detail">{escape_html(detail)}</div>'
+        "</div>",
+        unsafe_allow_html=True,
+    )
+
+
+def render_section_heading(title: str, description: str = "") -> None:
+    """Render a consistent heading for analytical sections."""
+    description_html = (
+        f"<p>{escape_html(description)}</p>" if description else ""
+    )
+    st.markdown(
+        f'<div class="section-heading"><div><h2>{escape_html(title)}</h2>'
+        f"{description_html}</div></div>",
+        unsafe_allow_html=True,
+    )
+
+
+def render_chart(figure, **kwargs) -> None:
+    """Apply the SALESCAST chart surface and typography before rendering."""
+    figure.update_layout(
+        template="plotly_dark",
+        paper_bgcolor="rgba(0,0,0,0)",
+        plot_bgcolor="rgba(0,0,0,0)",
+        font=dict(color="#cbd5e1", family="Inter, sans-serif"),
+        margin=dict(l=18, r=18, t=58, b=18),
+        legend=dict(bgcolor="rgba(0,0,0,0)"),
+    )
+    figure.update_xaxes(gridcolor="rgba(148, 163, 184, .12)", zerolinecolor="rgba(148, 163, 184, .18)")
+    figure.update_yaxes(gridcolor="rgba(148, 163, 184, .12)", zerolinecolor="rgba(148, 163, 184, .18)")
+    st.plotly_chart(figure, use_container_width=True, **kwargs)
+
+
+def reset_dataset_state(df_raw: pd.DataFrame) -> None:
+    """Discard results tied to an older input dataset."""
+    st.session_state.df = df_raw
+    st.session_state.clean_df = None
+    st.session_state.config = {}
+    st.session_state.model_lr = None
+    st.session_state.model_xgb = None
+    st.session_state.metrics = {}
+    st.session_state.feature_names = []
+    st.session_state.X_test = None
+    st.session_state.y_test = None
+    st.session_state.test_dates = None
+    st.session_state.pop("last_forecast", None)
+    st.session_state.pop("last_forecast_config", None)
+
+
+def model_r_squared(model_name: str) -> Optional[float]:
+    """Calculate R-squared from the stored held-out test data when available."""
+    from sklearn.metrics import r2_score
+
+    model = (
+        st.session_state.model_lr
+        if model_name == "Linear Regression"
+        else st.session_state.model_xgb
+    )
+    X_test = st.session_state.X_test
+    y_test = st.session_state.y_test
+    if model is None or X_test is None or y_test is None or len(y_test) < 2:
+        return None
+    predictions = np.clip(model.predict(X_test), 0, None)
+    return float(r2_score(y_test, predictions))
+
 # ── Sidebar ────────────────────────────────────────────────────────────────────
 with st.sidebar:
-    st.markdown("## 📈 Sales Forecasting")
-    st.markdown("**Project #42 · Section 315 B**")
-    st.markdown("---")
+    st.markdown(
+        f'<div class="salescast-brand">'
+        f'<img class="salescast-brand-mark" src="{SALESCAST_MARK}" alt="SALESCAST chart logo">'
+        '<div><div class="salescast-brand-name">SALESCAST</div>'
+        '<div class="salescast-brand-subtitle">Intelligent Sales Analytics</div></div></div>',
+        unsafe_allow_html=True,
+    )
     page = st.radio(
         "Navigation",
-        ["🏠 Home", "📂 Dataset", "🔍 EDA", "🤖 Model Training", "🔮 Forecast", "📚 About"],
+        [
+            "Dashboard", "Forecast Studio", "Data Explorer",
+            "Model Performance", "Analytics", "Reports", "About Project",
+        ],
+        format_func=lambda value: {
+            "Dashboard": "◈  Dashboard",
+            "Forecast Studio": "⌁  Forecast Studio",
+            "Data Explorer": "▦  Data Explorer",
+            "Model Performance": "◉  Model Performance",
+            "Analytics": "⌗  Analytics",
+            "Reports": "▤  Reports",
+            "About Project": "ⓘ  About Project",
+        }[value],
+        key="active_page",
         label_visibility="collapsed",
     )
     st.markdown("---")
-    st.markdown("**Dataset Status**")
+    st.markdown("**WORKSPACE STATUS**")
     if st.session_state.df is not None:
         n = len(st.session_state.df)
-        st.success(f"✅ Loaded · {n:,} rows")
+        st.success(f"Dataset ready · {n:,} rows")
     else:
-        st.warning("⚠️ No dataset loaded")
+        st.warning("No dataset loaded")
 
-    st.markdown("**Model Status**")
+    st.markdown("**AVAILABLE MODELS**")
     lr_ok  = st.session_state.model_lr is not None
     xgb_ok = st.session_state.model_xgb is not None
-    st.write(f"{'✅' if lr_ok  else '❌'} Linear Regression")
-    st.write(f"{'✅' if xgb_ok else '❌'} XGBoost")
+    st.write(f"{'●' if lr_ok else '○'} Linear Regression")
+    st.write(f"{'●' if xgb_ok else '○'} XGBoost")
+    st.caption("Project #42 · Section 315 B")
 
 
 # ═════════════════════════════════════════════════════════════════════════════
 # PAGE: HOME
 # ═════════════════════════════════════════════════════════════════════════════
-if page == "🏠 Home":
-    st.markdown("""
-    <div style='text-align:center; padding: 32px 0 16px;'>
-      <h1 style='font-size:2.6rem; font-weight:700; background:linear-gradient(90deg,#4C9BE8,#7EC8A0);
-                 -webkit-background-clip:text; -webkit-text-fill-color:transparent;'>
-        AI-Based Sales Forecasting
-      </h1>
-      <p style='color:#8892a0; font-size:1.1rem;'>
-        Using Machine Learning · Project #42 · Section 315 B
-      </p>
-    </div>
-    """, unsafe_allow_html=True)
-
-    # ── KPI cards ────────────────────────────────────────────────────────────
-    c1, c2, c3, c4 = st.columns(4)
+if page == "Dashboard":
     df = st.session_state.clean_df
     metrics = st.session_state.metrics
+    cfg = st.session_state.config
+    sales_col = cfg.get("sales_col")
+    date_col = cfg.get("date_col")
+    sales_by_date = None
+    total_sales = average_daily = latest_sales = "—"
+    latest_detail = "Validate a dataset to show actual sales"
+    if df is not None and sales_col in df.columns and date_col in df.columns:
+        sales_by_date = df.groupby(date_col)[sales_col].sum().sort_index()
+        total_sales = f"{df[sales_col].sum():,.0f}"
+        average_daily = f"{sales_by_date.mean():,.1f}"
+        latest_sales = f"{sales_by_date.iloc[-1]:,.1f}"
+        latest_detail = pd.Timestamp(sales_by_date.index[-1]).strftime("%b %d, %Y")
 
-    with c1:
-        val = f"{df[st.session_state.config.get('sales_col','Sales')].sum():,.0f}" if df is not None else "—"
-        st.markdown(f'<div class="kpi-card"><div class="kpi-value">{val}</div><div class="kpi-label">Total Historical Sales</div></div>', unsafe_allow_html=True)
-    with c2:
-        val = f"{df[st.session_state.config.get('sales_col','Sales')].mean():.1f}" if df is not None else "—"
-        st.markdown(f'<div class="kpi-card"><div class="kpi-value">{val}</div><div class="kpi-label">Average Daily Sales</div></div>', unsafe_allow_html=True)
-    with c3:
-        if metrics:
-            best = min(metrics, key=lambda m: metrics[m]["rmse"])
-        else:
-            best = "—"
-        st.markdown(f'<div class="kpi-card"><div class="kpi-value" style="font-size:1.2rem;">{best}</div><div class="kpi-label">Best Model (RMSE)</div></div>', unsafe_allow_html=True)
-    with c4:
-        if metrics:
-            best_rmse = min(m["rmse"] for m in metrics.values())
-            val = f"{best_rmse:.2f}"
-        else:
-            val = "—"
-        st.markdown(f'<div class="kpi-card"><div class="kpi-value">{val}</div><div class="kpi-label">Best RMSE</div></div>', unsafe_allow_html=True)
+    forecast_df = st.session_state.get("last_forecast")
+    best_model = min(metrics, key=lambda name: metrics[name]["rmse"]) if metrics else None
+    forecast_value = (
+        f"{forecast_df['Predicted_Sales'].iloc[0]:,.1f}"
+        if forecast_df is not None and not forecast_df.empty
+        else "—"
+    )
+    best_rmse = f"{metrics[best_model]['rmse']:,.2f}" if best_model else "—"
+    if not st.session_state.intro_revealed:
+        title_class = "salescast-title salescast-title--reveal"
+        st.session_state.intro_revealed = True
+    else:
+        title_class = "salescast-title"
+    dataset_ready = df is not None
+    model_ready = bool(st.session_state.model_lr or st.session_state.model_xgb)
+    hero_copy, hero_animation = st.columns([4, 1.15], vertical_alignment="center")
+    with hero_copy:
+        st.markdown(
+            f'<section class="salescast-hero">'
+            f'<img class="salescast-hero-wordmark" src="{SALESCAST_WORDMARK}" alt="SALESCAST — Intelligent Sales Analytics">'
+            f'<p class="salescast-eyebrow">Forecasting workspace</p>'
+            f'<h1 class="{title_class}">Know what comes <span>next.</span></h1>'
+            '<p class="salescast-description">A practical forecasting workspace for '
+            'exploring historical demand, evaluating models, and planning ahead.</p>'
+            '<div class="salescast-status-row">'
+            f'<span class="salescast-status"><i class="salescast-status-dot {"is-ready" if dataset_ready else ""}"></i>'
+            f'{"Dataset connected" if dataset_ready else "Dataset not connected"}</span>'
+            f'<span class="salescast-status"><i class="salescast-status-dot {"is-ready" if model_ready else ""}"></i>'
+            f'{"Model ready" if model_ready else "No trained model"}</span>'
+            '<span class="salescast-status">Forecasts use your validated data</span>'
+            '</div></section>',
+            unsafe_allow_html=True,
+        )
+    with hero_animation:
+        with st.container(border=True):
+            st_lottie(
+                load_salescast_animation(),
+                speed=0.85,
+                loop=False,
+                quality="medium",
+                height=160,
+                width=160,
+                key="salescast_dashboard_lottie",
+            )
+            st.caption("Sales signal")
 
-    st.markdown("---")
+    if sales_by_date is None:
+        total_detail = average_detail = latest_detail = "Load and validate a dataset to calculate"
+    else:
+        total_detail = f"{len(df):,} validated records"
+        average_detail = f"Across {len(sales_by_date):,} dates"
+    metric_columns = st.columns(5)
+    with metric_columns[0]:
+        render_metric_card("Historical sales", total_sales, total_detail, "teal")
+    with metric_columns[1]:
+        render_metric_card("Average daily sales", average_daily, average_detail, "blue")
+    with metric_columns[2]:
+        render_metric_card("Latest actual", latest_sales, latest_detail, "emerald")
+    with metric_columns[3]:
+        render_metric_card(
+            "Next-period forecast", forecast_value,
+            "First predicted value" if forecast_df is not None else "Generate a forecast to populate",
+            "purple",
+        )
+    with metric_columns[4]:
+        render_metric_card(
+            "Best test RMSE", best_rmse,
+            best_model or "Train a model to calculate",
+            "pink",
+        )
 
-    # ── Intro ─────────────────────────────────────────────────────────────────
-    col1, col2 = st.columns([3, 2])
-    with col1:
-        st.markdown('<div class="section-header">🎯 Objective</div>', unsafe_allow_html=True)
-        st.markdown("""
-        <div class="info-box">
-        This application predicts future product sales using historical data,
-        promotions, and seasonal patterns. It helps businesses estimate demand
-        and plan inventory more efficiently.<br><br>
-        Two ML models are compared:
-        <ul>
-          <li><b>Linear Regression</b> – fast, interpretable baseline</li>
-          <li><b>XGBoost Regressor</b> – powerful gradient-boosted trees</li>
-        </ul>
-        Primary metric: <b>RMSE</b> (Root Mean Squared Error) — lower is better.
-        </div>
-        """, unsafe_allow_html=True)
-
-        st.markdown('<div class="section-header">⚙️ How It Works</div>', unsafe_allow_html=True)
-        steps = [
-            ("1️⃣", "Upload Dataset", "Load your sales CSV or use the built-in sample data."),
-            ("2️⃣", "Explore Data", "Visualise trends, seasonality, and promotional effects."),
-            ("3️⃣", "Train Models", "Both models train on historical data; test RMSE is compared."),
-            ("4️⃣", "Forecast", "The chosen model predicts sales for the next N days."),
-        ]
-        for icon, title, desc in steps:
-            st.markdown(f"**{icon} {title}** — {desc}")
-
-    with col2:
-        st.markdown('<div class="section-header">🚀 Quick Start</div>', unsafe_allow_html=True)
-        if st.button("📂 Load Sample Dataset", use_container_width=True, type="primary"):
+    render_section_heading(
+        "Historical Sales vs Forecast",
+        "Actual sales are shown in teal; the forecast is shown with a dashed line.",
+    )
+    if df is None:
+        st.info("Load and validate a dataset in Data Explorer to view its sales history.")
+        if st.button("Open Data Explorer", type="primary", key="dashboard_open_data"):
             st.session_state.page_override = "📂 Dataset"
             st.rerun()
+    else:
+        chart_history = df
+        forecast_config = st.session_state.get("last_forecast_config", {})
+        for column_key, filter_key in (("store_col", "store_filter"), ("item_col", "item_filter")):
+            column = forecast_config.get(column_key)
+            selected = forecast_config.get(filter_key)
+            if selected is not None and column in chart_history.columns:
+                chart_history = chart_history[chart_history[column] == selected]
+        if forecast_df is not None and not forecast_df.empty:
+            render_chart(plot_forecast(chart_history, forecast_df, date_col, sales_col, tail_days=180))
+        else:
+            render_chart(plot_sales_over_time(chart_history, date_col, sales_col, title="Historical Sales"))
+            st.caption("Train a model and generate a forecast in Forecast Studio to extend this chart.")
 
-        st.markdown("---")
-        st.markdown("**Dataset:**")
-        st.code("data/sample_sales.csv", language="text")
-        st.markdown("**Launch:**")
-        st.code("py -m streamlit run app.py", language="bash")
+        left, right = st.columns([1.2, 1])
+        with left:
+            render_section_heading("Seasonal Pattern", "Average sales by calendar month.")
+            render_chart(plot_avg_by_period(df, date_col, sales_col, period="month"))
+        with right:
+            render_section_heading("Demand Distribution", "How observed sales values are distributed.")
+            render_chart(plot_sales_distribution(df, sales_col))
+
+    if metrics:
+        render_section_heading("Model Snapshot", f"Best current test-set result: {best_model}.")
+        cols = st.columns(len(metrics))
+        for col, (name, values) in zip(cols, metrics.items()):
+            with col:
+                r_squared = model_r_squared(name)
+                render_metric_card(
+                    name,
+                    f"RMSE {values['rmse']:,.2f}",
+                    f"MAE {values['mae']:,.2f} · R² {r_squared:.3f}" if r_squared is not None
+                    else f"MAE {values['mae']:,.2f}",
+                    "emerald" if name == best_model else "blue",
+                )
 
 
 # ═════════════════════════════════════════════════════════════════════════════
 # PAGE: DATASET
 # ═════════════════════════════════════════════════════════════════════════════
-elif page == "📂 Dataset":
-    st.markdown('<div class="section-header">📂 Dataset Management</div>', unsafe_allow_html=True)
+elif page == "Data Explorer":
+    render_section_heading("Data Explorer", "Load, validate, and inspect sales data.")
 
     col_upload, col_sample = st.columns(2)
 
@@ -225,12 +357,19 @@ elif page == "📂 Dataset":
         uploaded = st.file_uploader("Choose a CSV file", type="csv",
                                     help="Supported columns: Date, Sales, Store, Item, Promo, …")
         if uploaded:
-            df_raw, err = load_csv(uploaded)
-            if err:
-                st.error(err)
-            else:
-                st.session_state.df = df_raw
-                st.success(f"✅ Uploaded: {df_raw.shape[0]:,} rows × {df_raw.shape[1]} columns")
+            upload_digest = hashlib.sha256(uploaded.getvalue()).hexdigest()
+            if st.session_state.get("upload_digest") != upload_digest:
+                df_raw, err = load_csv(uploaded)
+                if err:
+                    st.error(err)
+                else:
+                    reset_dataset_state(df_raw)
+                    st.session_state.upload_digest = upload_digest
+                    st.success(f"Uploaded: {df_raw.shape[0]:,} rows × {df_raw.shape[1]} columns")
+            elif st.session_state.df is not None:
+                st.caption(f"Uploaded file ready · {st.session_state.df.shape[0]:,} rows")
+        else:
+            st.session_state.upload_digest = None
 
     with col_sample:
         st.markdown("#### Use built-in demonstration data")
@@ -243,7 +382,7 @@ elif page == "📂 Dataset":
                 if err:
                     st.error(err)
                 else:
-                    st.session_state.df = df_raw
+                    reset_dataset_state(df_raw)
                     st.success(f"✅ Loaded sample: {df_raw.shape[0]:,} rows × {df_raw.shape[1]} columns")
 
         st.markdown("""
@@ -258,7 +397,7 @@ elif page == "📂 Dataset":
     if st.session_state.df is not None:
         df = st.session_state.df
         st.markdown("---")
-        st.markdown('<div class="section-header">🗂 Column Configuration</div>', unsafe_allow_html=True)
+        render_section_heading("Column Configuration", "Choose the target and optional feature columns.")
 
         cols = df.columns.tolist()
 
@@ -322,40 +461,73 @@ elif page == "📂 Dataset":
                 st.session_state.model_lr  = None
                 st.session_state.model_xgb = None
                 st.session_state.metrics   = {}
+                st.session_state.feature_names = []
+                st.session_state.X_test = None
+                st.session_state.y_test = None
+                st.session_state.test_dates = None
+                st.session_state.pop("last_forecast", None)
+                st.session_state.pop("last_forecast_config", None)
 
         # ── Data preview ──────────────────────────────────────────────────────
         if st.session_state.clean_df is not None:
             st.markdown("---")
-            st.markdown('<div class="section-header">👁️ Data Preview</div>', unsafe_allow_html=True)
+            render_section_heading("Validated Data", "Preview rows and review data-quality indicators.")
             clean = st.session_state.clean_df
             cfg   = st.session_state.config
 
-            m1, m2, m3, m4 = st.columns(4)
-            m1.metric("Rows",    f"{len(clean):,}")
-            m2.metric("Columns", len(clean.columns))
-            m3.metric("Date Range",
-                      f"{clean[cfg['date_col']].min().date()} – {clean[cfg['date_col']].max().date()}")
-            m4.metric("Sales Range",
-                      f"{clean[cfg['sales_col']].min():.0f} – {clean[cfg['sales_col']].max():.0f}")
+            raw = st.session_state.df
+            metric_columns = st.columns(4)
+            with metric_columns[0]:
+                render_metric_card("Validated rows", f"{len(clean):,}", "After date/sales validation", "teal")
+            with metric_columns[1]:
+                render_metric_card("Columns", f"{len(clean.columns):,}", "Available features", "blue")
+            with metric_columns[2]:
+                date_range = (
+                    f"{pd.to_datetime(clean[cfg['date_col']]).min():%b %d, %Y} – "
+                    f"{pd.to_datetime(clean[cfg['date_col']]).max():%b %d, %Y}"
+                )
+                render_metric_card("Date range", date_range, cfg["date_col"], "purple")
+            with metric_columns[3]:
+                render_metric_card(
+                    "Raw duplicate rows",
+                    f"{int(raw.duplicated().sum()):,}",
+                    "Exact duplicate records in uploaded data",
+                    "pink",
+                )
 
-            st.dataframe(clean.head(50), use_container_width=True)
+            search_text = st.text_input("Search validated rows", placeholder="Search any column value…")
+            preview = clean
+            if search_text:
+                matching_rows = clean.astype(str).apply(
+                    lambda column: column.str.contains(
+                        search_text, case=False, na=False, regex=False
+                    )
+                ).any(axis=1)
+                preview = clean.loc[matching_rows]
+                st.caption(f"{len(preview):,} matching rows")
+            st.dataframe(preview.head(200), use_container_width=True)
 
-            miss = missing_value_summary(clean)
+            miss = missing_value_summary(raw)
             if not miss.empty:
-                st.warning("⚠️ Missing values detected:")
+                st.warning("Missing values in the uploaded source data:")
                 st.dataframe(miss, use_container_width=True)
             else:
-                st.success("✅ No missing values after cleaning.")
+                st.success("No missing values detected in the uploaded source data.")
+
+            numerical = clean.select_dtypes(include=[np.number]).describe().T
+            if not numerical.empty:
+                with st.expander("Numerical summaries"):
+                    st.dataframe(numerical, use_container_width=True)
 
             with st.expander("📊 Data Types"):
-                st.dataframe(clean.dtypes.rename("dtype"), use_container_width=True)
+                st.dataframe(clean.dtypes.astype(str).rename("dtype").to_frame(), use_container_width=True)
 
 
 # ═════════════════════════════════════════════════════════════════════════════
 # PAGE: EDA
 # ═════════════════════════════════════════════════════════════════════════════
-elif page == "🔍 EDA":
-    st.markdown('<div class="section-header">🔍 Exploratory Data Analysis</div>', unsafe_allow_html=True)
+elif page == "Analytics":
+    render_section_heading("Analytics", "Explore trends, seasonality, promotions, and relationships.")
 
     df = st.session_state.clean_df
     if df is None:
@@ -374,6 +546,69 @@ elif page == "🔍 EDA":
     else:
         eda_df = df
 
+    st.markdown("#### Animated Monthly Sales")
+    animated_group_options = [
+        column for column in [stc, ic, "Category"] if column and column in eda_df.columns
+    ]
+    animated_group = st.selectbox(
+        "Color by",
+        ["No grouping"] + animated_group_options,
+        key="analytics_animated_group",
+    )
+    st.button("Replay animation", key="analytics_vizzu_replay")
+    animated_group_col = None if animated_group == "No grouping" else animated_group
+    animated_sales = prepare_animated_sales_data(
+        eda_df, dc, sc, group_col=animated_group_col
+    )
+    if animated_sales.empty:
+        st.info("No valid monthly sales values are available for the animated chart.")
+    else:
+        from st_vizzu import create_vizzu_obj, vizzu_animate, vizzu_plot
+
+        animated_chart = create_vizzu_obj(animated_sales)
+        animated_chart.analytics = False
+        channels = {"x": "Month", "y": "Sales"}
+        if animated_group_col is not None:
+            channels["color"] = "Group"
+        animated_chart = vizzu_animate(
+            animated_chart,
+            {
+                "channels": channels,
+                "geometry": "line",
+                "title": "Monthly Sales Trend",
+                "sort": "none",
+            },
+        )
+        animated_chart = vizzu_animate(
+            animated_chart,
+            style_dict={
+                "backgroundColor": "#0B1220FF",
+                "plot": {
+                    "marker": {
+                        "colorPalette": (
+                            "#2DD4BFFF #8B5CF6FF #38BDF8FF #F472B6FF"
+                        )
+                    },
+                    "xAxis": {
+                        "label": {"color": "#94A3B8FF"},
+                        "title": {"color": "#CBD5E1FF"},
+                        "interlacing": {"color": "#0B1220FF"},
+                    },
+                    "yAxis": {
+                        "label": {"color": "#94A3B8FF"},
+                        "title": {"color": "#CBD5E1FF"},
+                        "interlacing": {"color": "#0B1220FF"},
+                    },
+                },
+                "title": {"color": "#F8FAFCFF"},
+            },
+        )
+        vizzu_plot(animated_chart, width=960, height=460)
+        st.caption(
+            "Click Replay animation to replay the monthly trend. Grouped charts "
+            "show the six highest-sales groups; the rest are combined."
+        )
+
     # ── Sales over time ────────────────────────────────────────────────────────
     st.markdown("#### 📈 Sales Over Time")
     group_for_time = st.selectbox("Group by", ["(none)"] + [c for c in [stc, ic] if c])
@@ -381,20 +616,20 @@ elif page == "🔍 EDA":
     fig = plot_sales_over_time(eda_df, dc, sc,
                                store_col=group_time if group_time == stc else None,
                                item_col=group_time  if group_time == ic  else None)
-    st.plotly_chart(fig, use_container_width=True)
+    render_chart(fig)
 
     # ── Distribution & averages ────────────────────────────────────────────────
     c1, c2 = st.columns(2)
     with c1:
-        st.plotly_chart(plot_sales_distribution(eda_df, sc), use_container_width=True)
+        render_chart(plot_sales_distribution(eda_df, sc))
     with c2:
         period = st.radio("Average sales by", ["month", "dayofweek"], horizontal=True)
-        st.plotly_chart(plot_avg_by_period(eda_df, dc, sc, period=period), use_container_width=True)
+        render_chart(plot_avg_by_period(eda_df, dc, sc, period=period))
 
     # ── Promo comparison ───────────────────────────────────────────────────────
     if pc and pc in eda_df.columns:
         st.markdown("#### 🎁 Promotion Effect")
-        st.plotly_chart(plot_promo_comparison(eda_df, sc, pc), use_container_width=True)
+        render_chart(plot_promo_comparison(eda_df, sc, pc))
     else:
         st.info("ℹ️ No promotion column selected — promotion comparison chart skipped.")
 
@@ -403,13 +638,13 @@ elif page == "🔍 EDA":
     if group_opts:
         st.markdown("#### 🏪 Sales by Group")
         selected_group = st.selectbox("Group by column", group_opts)
-        st.plotly_chart(plot_group_comparison(eda_df, selected_group, sc), use_container_width=True)
+        render_chart(plot_group_comparison(eda_df, selected_group, sc))
 
     # ── Correlation heatmap ────────────────────────────────────────────────────
     st.markdown("#### 🔗 Correlation Heatmap")
     num_cols = eda_df.select_dtypes(include=[np.number]).columns.tolist()
     if len(num_cols) >= 2:
-        st.plotly_chart(plot_correlation_heatmap(eda_df, num_cols[:12]), use_container_width=True)
+        render_chart(plot_correlation_heatmap(eda_df, num_cols[:12]))
     else:
         st.info("ℹ️ Not enough numeric columns for a correlation heatmap.")
 
@@ -417,13 +652,13 @@ elif page == "🔍 EDA":
 # ═════════════════════════════════════════════════════════════════════════════
 # PAGE: MODEL TRAINING
 # ═════════════════════════════════════════════════════════════════════════════
-elif page == "🤖 Model Training":
+elif page == "Model Performance":
     from src.model_training import (
         evaluate_model, get_feature_importance, get_predictions, save_model,
         train_linear_regression, train_xgboost,
     )
 
-    st.markdown('<div class="section-header">🤖 Model Training & Evaluation</div>', unsafe_allow_html=True)
+    render_section_heading("Model Performance", "Train and compare models using a chronological holdout.")
 
     df = st.session_state.clean_df
     if df is None:
@@ -521,14 +756,17 @@ elif page == "🤖 Model Training":
     if st.session_state.metrics:
         metrics = st.session_state.metrics
         st.markdown("---")
-        st.markdown('<div class="section-header">📊 Evaluation Results</div>', unsafe_allow_html=True)
+        render_section_heading("Evaluation Results", "Metrics are calculated on the held-out test period.")
 
         best = min(metrics, key=lambda m: metrics[m]["rmse"])
         cols_m = st.columns(len(metrics))
         for i, (name, m) in enumerate(metrics.items()):
             with cols_m[i]:
                 badge = " 🏆 Best" if name == best else ""
-                st.metric(f"{name}{badge}", f"RMSE: {m['rmse']:.3f}", f"MAE: {m['mae']:.3f}")
+                r_squared = model_r_squared(name)
+                st.metric(f"{name}{badge} · RMSE", f"{m['rmse']:.3f}", f"MAE: {m['mae']:.3f}")
+                if r_squared is not None:
+                    st.metric("R-squared", f"{r_squared:.3f}")
 
         st.markdown(f"""
         <div class="info-box">
@@ -541,7 +779,7 @@ elif page == "🤖 Model Training":
 
         # Model comparison chart
         if len(metrics) > 1:
-            st.plotly_chart(plot_model_comparison(metrics), use_container_width=True)
+            render_chart(plot_model_comparison(metrics))
 
         # Actual vs predicted chart
         if st.session_state.X_test is not None:
@@ -553,10 +791,10 @@ elif page == "🤖 Model Training":
             pred_xgb = get_predictions(st.session_state.model_xgb, X_test) if st.session_state.model_xgb else None
 
             fig_avp = plot_actual_vs_predicted(
-                test_dates, y_test.values, pred_lr, pred_xgb,
+                test_dates, y_test.values, pred_lr, pred_xgb, # type: ignore
                 date_col=st.session_state.config["date_col"],
             )
-            st.plotly_chart(fig_avp, use_container_width=True)
+            render_chart(fig_avp)
 
         # Feature importance
         fi_model = st.session_state.model_xgb or st.session_state.model_lr
@@ -564,14 +802,14 @@ elif page == "🤖 Model Training":
             imp = get_feature_importance(fi_model, st.session_state.feature_names)
             if imp:
                 with st.expander("🔬 Feature Importance"):
-                    st.plotly_chart(plot_feature_importance(imp), use_container_width=True)
+                    render_chart(plot_feature_importance(imp))
 
 
 # ═════════════════════════════════════════════════════════════════════════════
 # PAGE: FORECAST
 # ═════════════════════════════════════════════════════════════════════════════
-elif page == "🔮 Forecast":
-    st.markdown('<div class="section-header">🔮 Future Sales Forecast</div>', unsafe_allow_html=True)
+elif page == "Forecast Studio":
+    render_section_heading("Forecast Studio", "Configure a model-backed forecast and export its results.")
 
     df = st.session_state.clean_df
     if df is None:
@@ -589,12 +827,10 @@ elif page == "🔮 Forecast":
     dc, sc = cfg["date_col"], cfg["sales_col"]
 
     st.markdown("""
-    <div class="info-box">
-    📌 <b>How forecasting works:</b> Future predictions are generated step-by-step.
-    Each day's predicted sales become the lag features for the next day.
-    No actual future sales values are used — this is a true out-of-sample forecast.
-    Forecasts are estimates; accuracy depends on historical data quality and
-    assumptions about future promotions.
+    <div class="electric-panel">
+      <h3>Recursive forecast · real model output</h3>
+      <p>Each predicted day feeds the next step's lag features. The engine only uses
+      historical sales before the forecast period; future actuals are not used.</p>
     </div>
     """, unsafe_allow_html=True)
 
@@ -665,10 +901,12 @@ elif page == "🔮 Forecast":
         f3.metric("Forecast Horizon", f"{horizon} days")
 
         # Chart
-        st.plotly_chart(
-            plot_forecast(df, forecast_df, dc, sc, tail_days=120),
-            use_container_width=True
-        )
+        forecast_history = df
+        if store_c and store_filter is not None:
+            forecast_history = forecast_history[forecast_history[store_c] == store_filter]
+        if item_c and item_filter is not None:
+            forecast_history = forecast_history[forecast_history[item_c] == item_filter]
+        render_chart(plot_forecast(forecast_history, forecast_df, dc, sc, tail_days=120))
 
         # Table
         st.dataframe(forecast_df.rename(columns={dc: "Date"}), use_container_width=True)
@@ -685,10 +923,76 @@ elif page == "🔮 Forecast":
 
 
 # ═════════════════════════════════════════════════════════════════════════════
+# PAGE: REPORTS
+# ═════════════════════════════════════════════════════════════════════════════
+elif page == "Reports":
+    render_section_heading(
+        "Reports & Exports",
+        "Read the project report and download available analysis artifacts.",
+    )
+
+    report_path = ROOT / "reports" / "project_report.md"
+    if report_path.exists():
+        with st.expander("Project report", expanded=False):
+            st.markdown(report_path.read_text(encoding="utf-8"))
+        st.download_button(
+            "Download project report",
+            data=report_path.read_bytes(),
+            file_name=report_path.name,
+            mime="text/markdown",
+        )
+    else:
+        st.info("No Markdown project report is available in the reports folder.")
+
+    document_path = ROOT / "reports" / "Sales_Forecasting_Project_Report_Final.docx"
+    if document_path.exists():
+        st.download_button(
+            "Download final project report (DOCX)",
+            data=document_path.read_bytes(),
+            file_name=document_path.name,
+            mime="application/vnd.openxmlformats-officedocument.wordprocessingml.document",
+        )
+
+    render_section_heading("Saved analysis artifacts", "Existing files from the reports folder.")
+    artifact_names = ("historical_sales.csv", "model_performance.csv", "sales_forecast.csv")
+    available_artifacts = [
+        ROOT / "reports" / name for name in artifact_names
+        if (ROOT / "reports" / name).exists()
+    ]
+    if available_artifacts:
+        columns = st.columns(min(3, len(available_artifacts)))
+        for index, artifact in enumerate(available_artifacts):
+            with columns[index % len(columns)]:
+                st.download_button(
+                    f"Download {artifact.name}",
+                    data=artifact.read_bytes(),
+                    file_name=artifact.name,
+                    mime="text/csv",
+                    key=f"download_report_{artifact.stem}",
+                    use_container_width=True,
+                )
+    else:
+        st.info("No saved CSV analysis artifacts are available.")
+
+    current_forecast = st.session_state.get("last_forecast")
+    if current_forecast is not None and not current_forecast.empty:
+        st.markdown("---")
+        render_section_heading("Current session forecast", "Generated from the active model and dataset.")
+        st.dataframe(current_forecast, use_container_width=True)
+        st.download_button(
+            "Download current session forecast",
+            data=current_forecast.to_csv(index=False).encode("utf-8"),
+            file_name="salescast_forecast.csv",
+            mime="text/csv",
+            key="download_current_forecast",
+        )
+
+
+# ═════════════════════════════════════════════════════════════════════════════
 # PAGE: ABOUT
 # ═════════════════════════════════════════════════════════════════════════════
-elif page == "📚 About":
-    st.markdown('<div class="section-header">📚 About the Models & Methods</div>', unsafe_allow_html=True)
+elif page == "About Project":
+    render_section_heading("About the Project", "Sales forecasting methods, assumptions, and limitations.")
 
     tabs = st.tabs(["📐 Regression", "📊 Linear Regression", "🌳 XGBoost",
                     "🔧 Feature Engineering", "📏 RMSE", "⚠️ Limitations"])

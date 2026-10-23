@@ -1,0 +1,29 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" fill="none">
+  <defs>
+    <linearGradient id="mark-gradient" x1="12" y1="52" x2="52" y2="12" gradientUnits="userSpaceOnUse">
+      <stop stop-color="#2DD4BF"/>
+      <stop offset="1" stop-color="#8B5CF6"/>
+    </linearGradient>
+    <filter id="mark-glow" x="0" y="0" width="64" height="64" filterUnits="userSpaceOnUse">
+      <feGaussianBlur stdDeviation="2.2"/>
+    </filter>
+    <style>
+      .pulse-ring { transform-origin: 32px 32px; animation: ring-pulse 4s ease-in-out infinite; }
+      .chart-stroke { stroke-dasharray: 74; stroke-dashoffset: 74; animation: chart-draw 1.35s cubic-bezier(.2,.7,.2,1) .18s forwards; }
+      @keyframes chart-draw { to { stroke-dashoffset: 0; } }
+      @keyframes ring-pulse { 0%, 100% { opacity: .28; transform: scale(.97); } 50% { opacity: .58; transform: scale(1.03); } }
+      @media (prefers-reduced-motion: reduce) {
+        .pulse-ring, .chart-stroke { animation: none; }
+        .pulse-ring { opacity: .38; transform: none; }
+        .chart-stroke { stroke-dashoffset: 0; }
+      }
+    </style>
+  </defs>
+  <rect x="5.5" y="5.5" width="53" height="53" rx="17" fill="#111827" stroke="#2DD4BF" stroke-opacity=".28"/>
+  <circle class="pulse-ring" cx="32" cy="32" r="23" stroke="url(#mark-gradient)" stroke-opacity=".58"/>
+  <path d="M17 43.5h30" stroke="#94A3B8" stroke-opacity=".48" stroke-linecap="round"/>
+  <path d="M19.5 39V32.5h6V39m6 0V25h6v14m6 0V19.5h6V39" fill="#2DD4BF" fill-opacity=".13" stroke="#2DD4BF" stroke-opacity=".62" stroke-width="1.5" stroke-linejoin="round"/>
+  <path class="chart-stroke" d="m17.5 34.5 9-7 7 3.5 13-13" stroke="url(#mark-gradient)" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/>
+  <path d="M40.5 18H47v6.5" stroke="#8B5CF6" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/>
+  <path d="m19 34 8-6.3 6.5 3.2 12-12" stroke="#2DD4BF" stroke-opacity=".65" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" filter="url(#mark-glow)"/>
+</svg>

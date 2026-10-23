@@ -1,0 +1,29 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 268 64" fill="none">
+  <defs>
+    <linearGradient id="wordmark-gradient" x1="10" y1="54" x2="58" y2="8" gradientUnits="userSpaceOnUse">
+      <stop stop-color="#2DD4BF"/>
+      <stop offset="1" stop-color="#8B5CF6"/>
+    </linearGradient>
+    <style>
+      .chart-stroke { stroke-dasharray: 74; stroke-dashoffset: 74; animation: chart-draw 1.35s cubic-bezier(.2,.7,.2,1) .18s forwards; }
+      .wordmark { opacity: 0; animation: wordmark-in .65s ease-out .45s forwards; }
+      @keyframes chart-draw { to { stroke-dashoffset: 0; } }
+      @keyframes wordmark-in { to { opacity: 1; } }
+      @media (prefers-reduced-motion: reduce) {
+        .chart-stroke, .wordmark { animation: none; }
+        .chart-stroke { stroke-dashoffset: 0; }
+        .wordmark { opacity: 1; }
+      }
+    </style>
+  </defs>
+  <rect x="5.5" y="5.5" width="53" height="53" rx="17" fill="#111827" stroke="#2DD4BF" stroke-opacity=".28"/>
+  <circle cx="32" cy="32" r="23" stroke="url(#wordmark-gradient)" stroke-opacity=".3"/>
+  <path d="M17 43.5h30" stroke="#94A3B8" stroke-opacity=".48" stroke-linecap="round"/>
+  <path d="M19.5 39V32.5h6V39m6 0V25h6v14m6 0V19.5h6V39" fill="#2DD4BF" fill-opacity=".13" stroke="#2DD4BF" stroke-opacity=".62" stroke-width="1.5" stroke-linejoin="round"/>
+  <path class="chart-stroke" d="m17.5 34.5 9-7 7 3.5 13-13" stroke="url(#wordmark-gradient)" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/>
+  <path d="M40.5 18H47v6.5" stroke="#8B5CF6" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/>
+  <g class="wordmark">
+    <text x="72" y="34" fill="#F8FAFC" font-family="Inter, Arial, sans-serif" font-size="23" font-weight="750" letter-spacing="2.8">SALESCAST</text>
+    <text x="73" y="49" fill="#94A3B8" font-family="Inter, Arial, sans-serif" font-size="9" font-weight="600" letter-spacing="2">INTELLIGENT SALES ANALYTICS</text>
+  </g>
+</svg>

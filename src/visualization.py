@@ -18,10 +18,10 @@ from plotly.subplots import make_subplots
 
 
 PALETTE = px.colors.qualitative.Bold
-ACTUAL_COLOR    = "#4C9BE8"
-FORECAST_COLOR  = "#F4845F"
-LR_COLOR        = "#7EC8A0"
-XGB_COLOR       = "#E8B84B"
+ACTUAL_COLOR    = "#2DD4BF"
+FORECAST_COLOR  = "#A78BFA"
+LR_COLOR        = "#60A5FA"
+XGB_COLOR       = "#F59E0B"
 
 
 # ── Sales over time ───────────────────────────────────────────────────────────
@@ -217,23 +217,27 @@ def plot_forecast(
         x=hist[date_col], y=hist[sales_col],
         name="Historical Sales", mode="lines",
         line=dict(color=ACTUAL_COLOR, width=2),
+        hovertemplate="%{x|%b %d, %Y}<br>Actual sales: %{y:,.2f}<extra></extra>",
     ))
     fig.add_trace(go.Scatter(
         x=forecast_df[date_col], y=forecast_df["Predicted_Sales"],
         name="Forecast", mode="lines+markers",
         line=dict(color=FORECAST_COLOR, width=2, dash="dash"),
         marker=dict(size=5),
+        hovertemplate="%{x|%b %d, %Y}<br>Forecast sales: %{y:,.2f}<extra></extra>",
     ))
     # Shaded forecast region
     if len(forecast_df):
         start = forecast_df[date_col].min()
         end   = forecast_df[date_col].max()
+        fig.add_vline(
+            x=start,
+            line=dict(color=FORECAST_COLOR, dash="dot", width=1),
+        )
         fig.add_vrect(
             x0=str(start), x1=str(end),
             fillcolor=FORECAST_COLOR, opacity=0.07,
             line_width=0,
-            annotation_text="Forecast Period",
-            annotation_position="top left",
         )
     fig.update_layout(
         title="Sales Forecast",
